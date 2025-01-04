@@ -42,7 +42,12 @@ if not TELEGRAM_CHAT_IDS:
 class TrendScanner:
     def __init__(self):
         self.telegram = None
-        self.pytrends = TrendReq(hl='en-US', tz=360)
+        # Set timezone to US Eastern (360 = Central Time)
+        self.pytrends = TrendReq(
+            hl='en-US',  # Language set to US English
+            tz=240,      # Eastern Time (ET)
+            geo='US'     # Default geo location to US
+        )
         self.last_scan_time = None
         self.request_count = 0
         self.last_request_time = time.time()
@@ -51,79 +56,188 @@ class TrendScanner:
         self.consecutive_429s = 0
         self.base_delay = 5
         
-        # Initialize categories and search terms
+        # Initialize categories with term-specific stocks
         self.categories = {
             'AI and Machine Learning': {
-                'search_terms': ['artificial intelligence', 'machine learning', 'deep learning', 'neural networks', 'AI models', 'GPT-4', 'large language models', 'computer vision AI'],
-                'stocks': {'NVDA': 'NVIDIA', 'AI': 'C3.ai', 'PLTR': 'Palantir', 'BBAI': 'BigBear.ai', 'UPST': 'Upstart', 'SOUN': 'SoundHound', 'PATH': 'UiPath'}
+                'search_terms': {
+                    'artificial intelligence': {'NVDA': 'NVIDIA', 'AI': 'C3.ai', 'PLTR': 'Palantir'},
+                    'machine learning': {'NVDA': 'NVIDIA', 'AI': 'C3.ai', 'MSFT': 'Microsoft'},
+                    'deep learning': {'NVDA': 'NVIDIA', 'AMD': 'AMD', 'GOOGL': 'Google'},
+                    'neural networks': {'NVDA': 'NVIDIA', 'AMD': 'AMD', 'INTC': 'Intel'},
+                    'GPT-4': {'MSFT': 'Microsoft', 'GOOGL': 'Google', 'META': 'Meta'},
+                    'large language models': {'MSFT': 'Microsoft', 'GOOGL': 'Google', 'META': 'Meta'},
+                    'computer vision AI': {'NVDA': 'NVIDIA', 'PATH': 'UiPath', 'BBAI': 'BigBear.ai'}
+                }
             },
             'Cloud Computing': {
-                'search_terms': ['cloud computing', 'cloud services', 'cloud storage', 'cloud security', 'hybrid cloud', 'multi cloud', 'serverless computing'],
-                'stocks': {'AMZN': 'Amazon', 'MSFT': 'Microsoft', 'DDOG': 'Datadog', 'NET': 'Cloudflare', 'DOMO': 'Domo', 'NCNO': 'nCino', 'SUMO': 'Sumo Logic'}
+                'search_terms': {
+                    'cloud computing': {'AMZN': 'Amazon', 'MSFT': 'Microsoft', 'GOOGL': 'Google'},
+                    'cloud services': {'DDOG': 'Datadog', 'NET': 'Cloudflare', 'SNOW': 'Snowflake'},
+                    'cloud storage': {'BOX': 'Box', 'DBX': 'Dropbox', 'AMZN': 'Amazon AWS'},
+                    'cloud security': {'NET': 'Cloudflare', 'PANW': 'Palo Alto', 'CRWD': 'CrowdStrike'},
+                    'hybrid cloud': {'IBM': 'IBM', 'VMW': 'VMware', 'RHT': 'Red Hat'},
+                    'multi cloud': {'DDOG': 'Datadog', 'ESTC': 'Elastic', 'SUMO': 'Sumo Logic'}
+                }
             },
             'Cybersecurity': {
-                'search_terms': ['cybersecurity', 'zero trust security', 'ransomware protection', 'endpoint security', 'cloud security', 'network security', 'cyber attack'],
-                'stocks': {'CRWD': 'CrowdStrike', 'PANW': 'Palo Alto', 'S': 'SentinelOne', 'TENB': 'Tenable', 'RDWR': 'Radware', 'VRNS': 'Varonis', 'CYBR': 'CyberArk'}
+                'search_terms': {
+                    'cybersecurity': {'CRWD': 'CrowdStrike', 'PANW': 'Palo Alto', 'FTNT': 'Fortinet'},
+                    'zero trust security': {'OKTA': 'Okta', 'ZS': 'Zscaler', 'NET': 'Cloudflare'},
+                    'ransomware protection': {'CRWD': 'CrowdStrike', 'S': 'SentinelOne', 'VRNS': 'Varonis'},
+                    'endpoint security': {'CRWD': 'CrowdStrike', 'BB': 'BlackBerry', 'TENB': 'Tenable'},
+                    'network security': {'PANW': 'Palo Alto', 'FTNT': 'Fortinet', 'RDWR': 'Radware'},
+                    'cyber attack': {'CYBR': 'CyberArk', 'RPD': 'Rapid7', 'MNDT': 'Mandiant'}
+                }
             },
             'Quantum Computing': {
-                'search_terms': ['quantum computing', 'quantum computer', 'quantum supremacy', 'quantum advantage', 'quantum encryption', 'quantum processor'],
-                'stocks': {'IBM': 'IBM', 'IONQ': 'IonQ', 'RGTI': 'Rigetti', 'ARQQ': 'Arqit Quantum', 'QUBT': 'Quantum Computing'}
+                'search_terms': {
+                    'quantum computing': {'IBM': 'IBM', 'IONQ': 'IonQ', 'RGTI': 'Rigetti'},
+                    'quantum computer': {'IONQ': 'IonQ', 'RGTI': 'Rigetti', 'QUBT': 'Quantum Computing'},
+                    'quantum supremacy': {'GOOGL': 'Google', 'IBM': 'IBM', 'IONQ': 'IonQ'},
+                    'quantum encryption': {'ARQQ': 'Arqit Quantum', 'IBM': 'IBM', 'QUBT': 'Quantum Computing'},
+                    'quantum processor': {'IONQ': 'IonQ', 'RGTI': 'Rigetti', 'IBM': 'IBM'}
+                }
             },
             'Semiconductor Industry': {
-                'search_terms': ['semiconductor shortage', 'chip manufacturing', 'semiconductor industry', 'chip production', 'semiconductor equipment', 'chip design'],
-                'stocks': {'NVDA': 'NVIDIA', 'AMD': 'AMD', 'LSCC': 'Lattice Semi', 'POWI': 'Power Integrations', 'MPWR': 'Monolithic Power', 'DIOD': 'Diodes Inc'}
+                'search_terms': {
+                    'semiconductor shortage': {'TSM': 'TSMC', 'INTC': 'Intel', 'UMC': 'United Micro'},
+                    'chip manufacturing': {'AMAT': 'Applied Materials', 'ASML': 'ASML', 'LRCX': 'Lam Research'},
+                    'semiconductor industry': {'NVDA': 'NVIDIA', 'AMD': 'AMD', 'QCOM': 'Qualcomm'},
+                    'chip production': {'TSM': 'TSMC', 'INTC': 'Intel', 'SSNLF': 'Samsung'},
+                    'semiconductor equipment': {'AMAT': 'Applied Materials', 'KLAC': 'KLA Corp', 'TER': 'Teradyne'},
+                    'chip design': {'NVDA': 'NVIDIA', 'ARM': 'ARM Holdings', 'CDNS': 'Cadence Design'}
+                }
             },
             'DevOps and SRE': {
-                'search_terms': ['DevOps', 'Site Reliability Engineering', 'GitOps', 'DevSecOps', 'Infrastructure as Code', 'continuous deployment'],
-                'stocks': {'TEAM': 'Atlassian', 'DDOG': 'Datadog', 'PD': 'PagerDuty', 'ESTC': 'Elastic', 'API': 'Agora', 'DT': 'Dynatrace'}
+                'search_terms': {
+                    'DevOps': {'TEAM': 'Atlassian', 'DDOG': 'Datadog', 'PD': 'PagerDuty'},
+                    'Site Reliability Engineering': {'DDOG': 'Datadog', 'NOW': 'ServiceNow', 'DT': 'Dynatrace'},
+                    'GitOps': {'TEAM': 'Atlassian', 'GTLB': 'GitLab', 'GHYB': 'GitHub'},
+                    'DevSecOps': {'PANW': 'Palo Alto', 'CRWD': 'CrowdStrike', 'FTNT': 'Fortinet'},
+                    'Infrastructure as Code': {'HASHI': 'HashiCorp', 'MSFT': 'Microsoft', 'RHT': 'Red Hat'},
+                    'continuous deployment': {'TEAM': 'Atlassian', 'DDOG': 'Datadog', 'NEWR': 'New Relic'}
+                }
             },
             'Edge Computing': {
-                'search_terms': ['edge computing', 'edge AI', 'edge cloud', 'edge analytics', 'IoT edge', 'edge security'],
-                'stocks': {'FSLY': 'Fastly', 'NET': 'Cloudflare', 'AKAM': 'Akamai', 'EQIX': 'Equinix', 'LLAP': 'Terran Orbital', 'SWCH': 'Switch'}
+                'search_terms': {
+                    'edge computing': {'FSLY': 'Fastly', 'NET': 'Cloudflare', 'AKAM': 'Akamai'},
+                    'edge AI': {'NVDA': 'NVIDIA', 'INTC': 'Intel', 'XLNX': 'Xilinx'},
+                    'edge cloud': {'AMZN': 'Amazon', 'MSFT': 'Microsoft', 'NET': 'Cloudflare'},
+                    'edge analytics': {'DDOG': 'Datadog', 'SPLK': 'Splunk', 'DT': 'Dynatrace'},
+                    'IoT edge': {'CSCO': 'Cisco', 'DELL': 'Dell', 'HPE': 'HP Enterprise'},
+                    'edge security': {'NET': 'Cloudflare', 'PANW': 'Palo Alto', 'FTNT': 'Fortinet'}
+                }
             },
             'Robotics and Automation': {
-                'search_terms': ['industrial robotics', 'collaborative robots', 'robot automation', 'warehouse robotics', 'medical robotics', 'robotic process automation'],
-                'stocks': {'ABB': 'ABB Ltd', 'ISRG': 'Intuitive Surgical', 'IRBT': 'iRobot', 'BRKS': 'Brooks Automation', 'AVAV': 'AeroVironment', 'NNDM': 'Nano Dimension'}
+                'search_terms': {
+                    'industrial robotics': {'ABB': 'ABB Ltd', 'FANUY': 'Fanuc', 'SIEGY': 'Siemens'},
+                    'collaborative robots': {'ABB': 'ABB Ltd', 'ISRG': 'Intuitive Surgical', 'TER': 'Teradyne'},
+                    'robot automation': {'ROK': 'Rockwell Automation', 'CGNX': 'Cognex', 'BRKS': 'Brooks Automation'},
+                    'warehouse robotics': {'AMZN': 'Amazon', 'KION': 'KION Group', 'THNKY': 'THK Co'},
+                    'medical robotics': {'ISRG': 'Intuitive Surgical', 'MASI': 'Masimo', 'STXS': 'Stereotaxis'},
+                    'robotic process automation': {'PATH': 'UiPath', 'NICE': 'Nice Ltd', 'BRKS': 'Brooks Automation'}
+                }
             },
             'Electric Vehicles': {
-                'search_terms': ['electric vehicles', 'EV charging', 'EV battery', 'electric car', 'EV technology', 'autonomous vehicles'],
-                'stocks': {'TSLA': 'Tesla', 'RIVN': 'Rivian', 'CHPT': 'ChargePoint', 'BLNK': 'Blink Charging', 'FSR': 'Fisker', 'NKLA': 'Nikola'}
+                'search_terms': {
+                    'electric vehicles': {'TSLA': 'Tesla', 'NIO': 'NIO', 'XPEV': 'XPeng'},
+                    'EV charging': {'CHPT': 'ChargePoint', 'BLNK': 'Blink Charging', 'EVGO': 'EVgo'},
+                    'EV battery': {'QS': 'QuantumScape', 'FREY': 'FREYR Battery', 'MVST': 'Microvast'},
+                    'electric car': {'TSLA': 'Tesla', 'LCID': 'Lucid', 'RIVN': 'Rivian'},
+                    'EV technology': {'TSLA': 'Tesla', 'ALB': 'Albemarle', 'PCRFY': 'Panasonic'},
+                    'autonomous vehicles': {'TSLA': 'Tesla', 'GOOGL': 'Waymo/Google', 'APTV': 'Aptiv'}
+                }
             },
             'Space Technology': {
-                'search_terms': ['space technology', 'satellite internet', 'space exploration', 'rocket technology', 'space tourism', 'satellite communication'],
-                'stocks': {'SPCE': 'Virgin Galactic', 'RKLB': 'Rocket Lab', 'ASTR': 'Astra Space', 'MNTS': 'Momentus', 'IRDM': 'Iridium', 'BKSY': 'BlackSky'}
+                'search_terms': {
+                    'space technology': {'SPCE': 'Virgin Galactic', 'BA': 'Boeing', 'LMT': 'Lockheed Martin'},
+                    'satellite internet': {'STRL': 'Starlink/SpaceX', 'VSAT': 'Viasat', 'MAXR': 'Maxar'},
+                    'space exploration': {'RKLB': 'Rocket Lab', 'SPCE': 'Virgin Galactic', 'BA': 'Boeing'},
+                    'rocket technology': {'RKLB': 'Rocket Lab', 'ASTR': 'Astra Space', 'BA': 'Boeing'},
+                    'space tourism': {'SPCE': 'Virgin Galactic', 'BKNG': 'Booking Holdings', 'EXPE': 'Expedia'},
+                    'satellite communication': {'IRDM': 'Iridium', 'GSAT': 'Globalstar', 'SATS': 'EchoStar'}
+                }
             },
             'Healthcare Technology': {
-                'search_terms': ['digital health', 'telemedicine', 'health tech', 'medical AI', 'remote patient monitoring', 'digital therapeutics', 'healthcare analytics'],
-                'stocks': {'TDOC': 'Teladoc', 'AMWL': 'Amwell', 'DOCS': 'Doximity', 'PHIC': 'Population Health', 'ONEM': '1Life Healthcare', 'HTEC': 'ROBO Health Tech ETF'}
+                'search_terms': {
+                    'digital health': {'TDOC': 'Teladoc', 'AMWL': 'Amwell', 'DOCS': 'Doximity'},
+                    'telemedicine': {'TDOC': 'Teladoc', 'AMWL': 'Amwell', 'ONEM': '1Life Healthcare'},
+                    'health tech': {'VEEV': 'Veeva Systems', 'CERN': 'Cerner', 'INOV': 'Inovalon'},
+                    'medical AI': {'ISRG': 'Intuitive Surgical', 'NVTA': 'Invitae', 'SDGR': 'Schrödinger'},
+                    'remote patient monitoring': {'DXCM': 'Dexcom', 'TNDM': 'Tandem Diabetes', 'PHG': 'Philips'},
+                    'digital therapeutics': {'PEAR': 'Pear Therapeutics', 'LVGO': 'Livongo', 'OMCL': 'Omnicell'},
+                    'healthcare analytics': {'CERN': 'Cerner', 'INOV': 'Inovalon', 'HCAT': 'Health Catalyst'}
+                }
             },
             'Biotech Innovation': {
-                'search_terms': ['gene therapy', 'CRISPR technology', 'mRNA technology', 'biotech research', 'precision medicine', 'genomic sequencing'],
-                'stocks': {'CRSP': 'CRISPR', 'NTLA': 'Intellia', 'EDIT': 'Editas Medicine', 'BEAM': 'Beam Therapeutics', 'VERV': 'Verve Therapeutics', 'DNAY': 'Codex DNA'}
+                'search_terms': {
+                    'gene therapy': {'CRSP': 'CRISPR Therapeutics', 'NTLA': 'Intellia', 'EDIT': 'Editas'},
+                    'CRISPR technology': {'CRSP': 'CRISPR Therapeutics', 'NTLA': 'Intellia', 'BEAM': 'Beam Therapeutics'},
+                    'mRNA technology': {'MRNA': 'Moderna', 'BNTX': 'BioNTech', 'ARCT': 'Arcturus'},
+                    'biotech research': {'ILMN': 'Illumina', 'TMO': 'Thermo Fisher', 'DHR': 'Danaher'},
+                    'precision medicine': {'EXAS': 'Exact Sciences', 'GH': 'Guardant Health', 'NVTA': 'Invitae'},
+                    'genomic sequencing': {'ILMN': 'Illumina', 'PACB': 'Pacific Biosciences', 'DNA': 'Ginkgo Bioworks'}
+                }
             },
             'Fintech and Digital Payments': {
-                'search_terms': ['digital payments', 'cryptocurrency', 'blockchain technology', 'digital banking', 'mobile payments', 'payment processing'],
-                'stocks': {'SQ': 'Block', 'AFRM': 'Affirm', 'UPST': 'Upstart', 'MARA': 'Marathon Digital', 'RIOT': 'Riot Platforms', 'BITF': 'Bitfarms'}
+                'search_terms': {
+                    'digital payments': {'SQ': 'Block', 'PYPL': 'PayPal', 'V': 'Visa'},
+                    'cryptocurrency': {'COIN': 'Coinbase', 'MARA': 'Marathon Digital', 'RIOT': 'Riot Platforms'},
+                    'blockchain technology': {'COIN': 'Coinbase', 'SQ': 'Block', 'IBM': 'IBM'},
+                    'digital banking': {'SQ': 'Block', 'SOFI': 'SoFi', 'AFRM': 'Affirm'},
+                    'mobile payments': {'SQ': 'Block', 'PYPL': 'PayPal', 'AAPL': 'Apple'},
+                    'payment processing': {'V': 'Visa', 'MA': 'Mastercard', 'ADYEY': 'Adyen'}
+                }
             },
             'Metaverse and AR/VR': {
-                'search_terms': ['metaverse', 'virtual reality', 'augmented reality', 'mixed reality', 'VR gaming', 'AR applications'],
-                'stocks': {'META': 'Meta', 'U': 'Unity', 'MTTR': 'Matterport', 'IMMR': 'Immersion', 'VUZI': 'Vuzix', 'KOPN': 'Kopin'}
+                'search_terms': {
+                    'metaverse': {'META': 'Meta', 'RBLX': 'Roblox', 'U': 'Unity'},
+                    'virtual reality': {'META': 'Meta', 'SONY': 'Sony', 'MSFT': 'Microsoft'},
+                    'augmented reality': {'SNAP': 'Snap', 'MSFT': 'Microsoft', 'AAPL': 'Apple'},
+                    'mixed reality': {'MSFT': 'Microsoft', 'META': 'Meta', 'AAPL': 'Apple'},
+                    'VR gaming': {'U': 'Unity', 'RBLX': 'Roblox', 'SONY': 'Sony'},
+                    'AR applications': {'SNAP': 'Snap', 'U': 'Unity', 'VUZI': 'Vuzix'}
+                }
             },
             'Clean Energy Tech': {
-                'search_terms': ['renewable energy', 'solar technology', 'wind power', 'energy storage', 'green hydrogen', 'smart grid'],
-                'stocks': {'ENPH': 'Enphase', 'FSLR': 'First Solar', 'RUN': 'Sunrun', 'NOVA': 'Sunnova', 'STEM': 'Stem Inc', 'BLDP': 'Ballard Power'}
+                'search_terms': {
+                    'renewable energy': {'NEE': 'NextEra', 'ENPH': 'Enphase', 'SEDG': 'SolarEdge'},
+                    'solar technology': {'ENPH': 'Enphase', 'SEDG': 'SolarEdge', 'FSLR': 'First Solar'},
+                    'wind power': {'NEE': 'NextEra', 'GE': 'General Electric', 'VWDRY': 'Vestas'},
+                    'energy storage': {'TSLA': 'Tesla', 'STEM': 'Stem Inc', 'FLUX': 'Flux Power'},
+                    'green hydrogen': {'PLUG': 'Plug Power', 'BE': 'Bloom Energy', 'FCEL': 'FuelCell'},
+                    'smart grid': {'ITRI': 'Itron', 'ENPH': 'Enphase', 'POWR': 'PowerSecure'}
+                }
             },
             'Smart Manufacturing': {
-                'search_terms': ['industrial IoT', 'smart factory', '3D printing', 'digital twin', 'predictive maintenance', 'manufacturing automation'],
-                'stocks': {'DDD': '3D Systems', 'XONE': 'ExOne', 'MKFG': 'Markforged', 'VLD': 'Velo3D', 'SHCR': 'Sharecare', 'FARO': 'FARO Technologies'}
+                'search_terms': {
+                    'industrial IoT': {'HON': 'Honeywell', 'ROK': 'Rockwell', 'PTC': 'PTC Inc'},
+                    'smart factory': {'ROK': 'Rockwell', 'ABB': 'ABB Ltd', 'SIEGY': 'Siemens'},
+                    '3D printing': {'DDD': '3D Systems', 'SSYS': 'Stratasys', 'MTLS': 'Materialise'},
+                    'digital twin': {'PTC': 'PTC Inc', 'ANSS': 'ANSYS', 'DASTY': 'Dassault'},
+                    'predictive maintenance': {'PTC': 'PTC Inc', 'ADSK': 'Autodesk', 'DDOG': 'Datadog'},
+                    'manufacturing automation': {'ROK': 'Rockwell', 'CGNX': 'Cognex', 'ZBRA': 'Zebra Tech'}
+                }
             },
             '5G and Connectivity': {
-                'search_terms': ['5G network', '5G technology', 'wireless infrastructure', 'network virtualization', '5G applications', 'mobile edge computing'],
-                'stocks': {'ERIC': 'Ericsson', 'NOK': 'Nokia', 'AVNW': 'Aviat Networks', 'GILT': 'Gilat Satellite', 'CMBM': 'Cambium Networks', 'INFN': 'Infinera'}
+                'search_terms': {
+                    '5G network': {'ERIC': 'Ericsson', 'NOK': 'Nokia', 'QCOM': 'Qualcomm'},
+                    '5G technology': {'QCOM': 'Qualcomm', 'ERIC': 'Ericsson', 'TMUS': 'T-Mobile'},
+                    'wireless infrastructure': {'AMT': 'American Tower', 'CCI': 'Crown Castle', 'SBAC': 'SBA Comm'},
+                    'network virtualization': {'VMW': 'VMware', 'CSCO': 'Cisco', 'RBBN': 'Ribbon Comm'},
+                    '5G applications': {'QCOM': 'Qualcomm', 'SWKS': 'Skyworks', 'KEYS': 'Keysight'},
+                    'mobile edge computing': {'AKAM': 'Akamai', 'FSLY': 'Fastly', 'NET': 'Cloudflare'}
+                }
             },
             'Data Analytics': {
-                'search_terms': ['big data analytics', 'data science', 'predictive analytics', 'business intelligence', 'data visualization', 'real-time analytics'],
-                'stocks': {'SNOW': 'Snowflake', 'MDB': 'MongoDB', 'AYX': 'Alteryx', 'CLDR': 'Cloudera', 'TYL': 'Tyler Tech', 'ALTR': 'Altair Engineering'}
+                'search_terms': {
+                    'big data analytics': {'SNOW': 'Snowflake', 'PLTR': 'Palantir', 'SPLK': 'Splunk'},
+                    'data science': {'PLTR': 'Palantir', 'SNOW': 'Snowflake', 'WDAY': 'Workday'},
+                    'predictive analytics': {'AYX': 'Alteryx', 'DDOG': 'Datadog', 'SPLK': 'Splunk'},
+                    'business intelligence': {'CRM': 'Salesforce', 'MSFT': 'Microsoft', 'PLAN': 'Anaplan'},
+                    'data visualization': {'DATA': 'Tableau', 'QLIK': 'Qlik', 'TIBX': 'TIBCO'},
+                    'real-time analytics': {'DDOG': 'Datadog', 'ESTC': 'Elastic', 'NEWR': 'New Relic'}
+                }
             }
         }
 
@@ -139,7 +253,13 @@ class TrendScanner:
             
             await asyncio.sleep(random.uniform(5, 10))
             
-            self.pytrends.build_payload([term], timeframe=ninety_day_timeframe, geo='US')
+            # Set geo to 'US' for United States
+            self.pytrends.build_payload(
+                [term],
+                timeframe=ninety_day_timeframe,
+                geo='US',  # Explicitly set to United States
+                gprop=''   # General web search
+            )
             historical_data = self.pytrends.interest_over_time()
             
             if historical_data is None or historical_data.empty:
@@ -240,24 +360,25 @@ class TrendScanner:
             for category, data in self.categories.items():
                 logger.info(f"\nScanning category: {category}")
                 results = await self.scan_trends_with_notification(
-                    data['search_terms'],
+                    list(data['search_terms'].keys()),
                     category
                 )
                 
                 if results:
                     message = f"🚨 Breakout Alert for {category}:\n\n"
                     for r in results:
-                        message += f"📈 Term: {r['term']}\n"
+                        term = r['term']
+                        message += f"📈 Term: {term}\n"
                         message += f"Value: {r['value']:.1f}\n"
                         
-                        # Add related stocks
+                        # Add stocks specific to this term
                         message += "\n💼 Related Stocks:\n"
-                        for symbol, company in data['stocks'].items():
+                        term_stocks = data['search_terms'][term]
+                        for symbol, company in term_stocks.items():
                             message += f"${symbol} - {company}\n"
                         
                         message += "\n"  # Add spacing between terms
-                        
-                    # Log the breakout with stocks
+                    
                     logger.info(f"Breakout detected in {category}:")
                     logger.info(message)
                     

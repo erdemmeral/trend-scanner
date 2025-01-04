@@ -2,7 +2,7 @@
 
 # Set the time you want the script to run (e.g., 2 AM UTC)
 SCHEDULED_HOUR=7
-SCHEDULED_MINUTE=35
+SCHEDULED_MINUTE=40
 
 while true; do
     # Get current hour and minute

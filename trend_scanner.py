@@ -11,6 +11,8 @@ import pandas as pd
 import numpy as np
 from pytrends.request import TrendReq
 import time
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.cron import CronTrigger
 
 # Set up logging first
 os.makedirs('logs', exist_ok=True)
@@ -421,10 +423,26 @@ async def main():
         logger.info("=== Tech Trend Scanner Starting ===")
         logger.info(f"Current time: {datetime.now()}")
         scanner = TrendScanner()
-        logger.info("Starting application...")
-        await scanner.start_app()
-        logger.info("Running scan...")
-        await scanner.run_continuous_scan()
+        
+        # Create scheduler
+        scheduler = AsyncIOScheduler()
+        
+        # Schedule the scan to run at 10:15 UTC daily
+        scheduler.add_job(
+            scanner.run_continuous_scan,
+            CronTrigger(hour=10, minute=15),
+            name='daily_scan'
+        )
+        
+        # Start the scheduler
+        scheduler.start()
+        
+        # Keep the program running
+        try:
+            await asyncio.get_event_loop().create_future()  # run forever
+        except (KeyboardInterrupt, SystemExit):
+            pass
+            
     except Exception as e:
         logger.error(f"Critical error: {str(e)}", exc_info=True)
         raise

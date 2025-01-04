@@ -6,5 +6,5 @@ mkdir -p logs
 # Activate virtual environment
 source venv/bin/activate
 
-# Run the scheduler
-python3 cloud_scheduler.py 
+# Run the scanner directly (no need for cloud_scheduler.py anymore)
+python3 trend_scanner.py 

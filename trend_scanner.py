@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 import asyncio
 import random
 import gc
-from python_telegram_bot import Application
+from telegram.ext import Application
 from dotenv import load_dotenv
 import pandas as pd
 import numpy as np

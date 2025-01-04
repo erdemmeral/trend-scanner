@@ -1,3 +1,17 @@
+import logging
+import sys
+import os
+from datetime import datetime, timedelta
+import asyncio
+import random
+import gc
+from telegram.ext import Application
+from dotenv import load_dotenv
+import pandas as pd
+import numpy as np
+from pytrends.request import TrendReq
+import time
+
 # Load environment variables
 load_dotenv()
 TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
@@ -11,4 +25,4 @@ if not TELEGRAM_BOT_TOKEN:
 
 if not TELEGRAM_CHAT_IDS:
     logger.error("TELEGRAM_CHAT_IDS not found in environment variables")
-    sys.exit(1) 
+    sys.exit(1)

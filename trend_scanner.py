@@ -1,24 +1,20 @@
-# Modify the run_continuous_scan method
-async def run_continuous_scan(self):
-    """
-    Run a single scan cycle and exit
-    """
+async def main():
+    """Main application entry point with error recovery"""
+    logger.info("=== Tech Trend Scanner Starting ===")
+    logger.info(f"Current time: {datetime.now()}")
+    logger.info("Checking environment variables:")
+    logger.info(f"TELEGRAM_BOT_TOKEN set: {'Yes' if TELEGRAM_BOT_TOKEN else 'No'}")
+    logger.info(f"TELEGRAM_CHAT_IDS set: {'Yes' if TELEGRAM_CHAT_IDS else 'No'}")
+    logger.info(f"SCAN_INTERVAL_HOURS: {SCAN_INTERVAL_HOURS}")
+    log_memory()
+    
     try:
-        cycle_start_time = datetime.now()
-        logger.info(f"\n=== Starting Scan Cycle at {cycle_start_time.strftime('%Y-%m-%d %H:%M:%S')} ===")
-        
-        self.last_scan_time = cycle_start_time
-        await self.initialize_components()
-        
-        # Run the category scanning
-        results = await self.scan_all_categories()
-        
-        logger.info("\n=== Scan Cycle Complete ===")
-        logger.info("Exiting program...")
-        
-        # Exit the program after completion
-        sys.exit(0)
-            
+        logger.info("Initializing scanner...")
+        scanner = TrendScanner()
+        logger.info("Starting application...")
+        await scanner.start_app()
+        logger.info("Running scan...")
+        await scanner.run_continuous_scan()
     except Exception as e:
-        logger.error(f"Error in scan cycle: {str(e)}", exc_info=True)
-        sys.exit(1) 
+        logger.error(f"Critical error: {str(e)}", exc_info=True)
+        raise 

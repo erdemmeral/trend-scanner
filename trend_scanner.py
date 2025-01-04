@@ -104,20 +104,42 @@ class TrendScanner:
                 logger.info(f"No historical data available for: {term}")
                 return None
             
-            # Log historical data statistics
+            # Calculate statistical measures
             historical_max = historical_data[term].max()
             historical_mean = historical_data[term].mean()
+            historical_std = historical_data[term].std()
+            z_score = (today_value - historical_mean) / historical_std if historical_std > 0 else 0
+            
             logger.info(f"\nHistorical data for {term}:")
             logger.info(f"90-day maximum: {historical_max}")
             logger.info(f"90-day average: {historical_mean:.2f}")
+            logger.info(f"90-day std dev: {historical_std:.2f}")
+            logger.info(f"Z-score: {z_score:.2f}")
             logger.info(f"Today vs Historical max: {today_value/historical_max*100:.1f}%")
             
-            # Return data only if today's value is significant
-            if today_value >= historical_max:
-                logger.info(f"Today's value ({today_value}) is higher than historical maximum ({historical_max})")
+            # Return data only if today's value is statistically significant
+            is_breakout = (
+                today_value >= 90 and  # Base threshold
+                today_value > historical_max and  # Higher than previous max
+                (
+                    z_score >= 2.0 or  # At least 2 standard deviations above mean
+                    today_value >= historical_mean * 1.5  # Or 50% above average
+                )
+            )
+            
+            if is_breakout:
+                logger.info(f"Breakout confirmed for {term}:")
+                logger.info(f"- Today's value ({today_value}) exceeds historical maximum ({historical_max})")
+                logger.info(f"- Z-score of {z_score:.2f} indicates statistical significance")
                 return historical_data
             else:
-                logger.info(f"Today's value ({today_value}) is not higher than historical maximum ({historical_max})")
+                logger.info(f"No breakout for {term}:")
+                if today_value <= historical_max:
+                    logger.info("- Not higher than historical maximum")
+                if z_score < 2.0:
+                    logger.info("- Z-score below threshold")
+                if today_value < historical_mean * 1.5:
+                    logger.info("- Not significantly above average")
                 return None
             
         except Exception as e:

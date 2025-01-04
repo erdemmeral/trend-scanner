@@ -1,0 +1,11 @@
+name: trend-scanner
+services:
+- name: trend-scanner
+  github:
+    repo: your-repo
+    branch: main
+  dockerfile_path: Dockerfile
+  instance_size_slug: basic-xxs
+  instance_count: 1
+  health_check:
+    http_path: /health 

@@ -1,0 +1,22 @@
+app = "trend-scanner"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[deploy]
+  strategy = "rolling"
+
+[[services]]
+  internal_port = 8070
+  protocol = "tcp"
+
+  [[services.ports]]
+    handlers = ["http"]
+    port = "80"
+
+  [[services.http_checks]]
+    interval = "30s"
+    timeout = "5s"
+    grace_period = "10s"
+    method = "get"
+    path = "/health" 

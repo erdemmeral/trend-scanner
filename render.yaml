@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: tech-trend-scanner
+    env: docker
+    dockerfilePath: ./Dockerfile
+    image: yourusername/tech-trend-scanner:latest
+    envVars:
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_CHAT_IDS
+        sync: false
+      - key: SCAN_INTERVAL_HOURS
+        value: 24
+      - key: PORT
+        value: 8070
+    healthCheckPath: /health 

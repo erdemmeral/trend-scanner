@@ -1,0 +1,24 @@
+version: '3.8'
+services:
+  trend-scanner:
+    build: .
+    env_file: .env
+    restart: always
+    ports:
+      - "8070:8070"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHONMALLOC=malloc
+      - MALLOC_ARENA_MAX=2
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:8070/health"]
+      interval: 1m
+      timeout: 10s
+      retries: 3 

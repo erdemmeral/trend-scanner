@@ -1,0 +1,10 @@
+python-telegram-bot[job-queue]>=20.7
+pytrends>=4.9.2
+pandas
+numpy
+scikit-learn
+python-dotenv
+aiohttp
+requests>=2.31.0
+urllib3<2.0.0
+psutil>=5.9.0 

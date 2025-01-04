@@ -12,6 +12,18 @@ import numpy as np
 from pytrends.request import TrendReq
 import time
 
+# Set up logging first
+os.makedirs('logs', exist_ok=True)
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(sys.stdout),
+        logging.FileHandler('logs/trend_scanner.log')
+    ]
+)
+logger = logging.getLogger(__name__)
+
 # Load environment variables
 load_dotenv()
 TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')

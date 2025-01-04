@@ -120,3 +120,50 @@ class TrendScanner:
         except Exception as e:
             logger.error(f"Error in scan cycle: {str(e)}")
             raise
+
+    async def start_app(self):
+        """Initialize Telegram"""
+        try:
+            logger.info("Loading Telegram components...")
+            self.telegram = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
+            await self.telegram.initialize()
+            await self.telegram.start()
+            logger.info("Telegram application started successfully")
+        except Exception as e:
+            logger.error(f"Error in start_app: {str(e)}")
+            raise
+
+    async def send_telegram_alert(self, message):
+        """Send alert to Telegram"""
+        try:
+            for chat_id in TELEGRAM_CHAT_IDS:
+                await self.telegram.bot.send_message(
+                    chat_id=chat_id,
+                    text=message,
+                    parse_mode='HTML'
+                )
+                logger.info(f"Alert sent to chat_id: {chat_id}")
+        except Exception as e:
+            logger.error(f"Error sending Telegram message: {str(e)}")
+
+async def main():
+    """Main application entry point"""
+    try:
+        logger.info("=== Tech Trend Scanner Starting ===")
+        logger.info(f"Current time: {datetime.now()}")
+        scanner = TrendScanner()
+        logger.info("Starting application...")
+        await scanner.start_app()
+        logger.info("Running scan...")
+        await scanner.run_continuous_scan()
+    except Exception as e:
+        logger.error(f"Critical error: {str(e)}", exc_info=True)
+        raise
+
+if __name__ == "__main__":
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        logger.info("Shutdown requested")
+    except Exception as e:
+        logger.error(f"Fatal error: {str(e)}", exc_info=True)

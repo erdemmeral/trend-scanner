@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Set the time you want the script to run
-SCHEDULED_HOUR=2
-SCHEDULED_MINUTE=0
+SCHEDULED_HOUR=9
+SCHEDULED_MINUTE=5
 
 # Create logs directory if it doesn't exist
 mkdir -p logs

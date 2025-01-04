@@ -155,36 +155,50 @@ class TrendScanner:
                 logger.info(f"Today's value ({today_value}) is below threshold of 90")
                 return None
             
-            # Calculate statistical measures using data excluding today
+            # Calculate 90-day statistics (excluding today)
             historical_data_prev = historical_data[:-1]  # Exclude today
-            historical_mean = historical_data_prev[term].mean()
-            historical_std = historical_data_prev[term].std()
-            z_score = (today_value - historical_mean) / historical_std if historical_std > 0 else 0
+            ninety_day_mean = historical_data_prev[term].mean()
+            ninety_day_std = historical_data_prev[term].std()
+            z_score = (today_value - ninety_day_mean) / ninety_day_std if ninety_day_std > 0 else 0
             
-            logger.info(f"\nHistorical statistics (90-day):")
-            logger.info(f"Average: {historical_mean:.2f}")
-            logger.info(f"Std Dev: {historical_std:.2f}")
-            logger.info(f"Z-score: {z_score:.2f}")
-            logger.info(f"Today vs Average: {(today_value/historical_mean*100):.1f}%")
+            # Calculate 30-day statistics
+            thirty_day_data = historical_data.tail(30)[:-1]  # Last 30 days excluding today
+            thirty_day_mean = thirty_day_data[term].mean()
+            thirty_day_std = thirty_day_data[term].std()
+            thirty_day_z_score = (today_value - thirty_day_mean) / thirty_day_std if thirty_day_std > 0 else 0
+            
+            logger.info(f"\nHistorical Statistics:")
+            logger.info(f"90-day Average: {ninety_day_mean:.2f}")
+            logger.info(f"90-day Std Dev: {ninety_day_std:.2f}")
+            logger.info(f"90-day Z-score: {z_score:.2f}")
+            logger.info(f"30-day Average: {thirty_day_mean:.2f}")
+            logger.info(f"30-day Std Dev: {thirty_day_std:.2f}")
+            logger.info(f"30-day Z-score: {thirty_day_z_score:.2f}")
+            logger.info(f"Today vs 90-day Avg: {(today_value/ninety_day_mean*100):.1f}%")
+            logger.info(f"Today vs 30-day Avg: {(today_value/thirty_day_mean*100):.1f}%")
             
             # Check for breakout conditions
             is_breakout = (
                 today_value >= 90 and  # Base threshold
-                today_value >= historical_mean * 1.5 and  # 50% above average
-                z_score >= 2.0  # At least 2 standard deviations
+                today_value >= ninety_day_mean * 1.5 and  # 50% above 90-day average
+                z_score >= 2.0 and  # Significant deviation from 90-day
+                today_value >= thirty_day_mean * 1.3  # 30% above 30-day average
             )
             
             if is_breakout:
                 logger.info(f"Breakout confirmed for {term}:")
-                logger.info(f"- Today's value ({today_value}) is 50%+ above average ({historical_mean:.1f})")
-                logger.info(f"- Z-score of {z_score:.2f} indicates statistical significance")
+                logger.info(f"- Today's value ({today_value}) is 50%+ above 90-day average ({ninety_day_mean:.1f})")
+                logger.info(f"- Today's value is 30%+ above 30-day average ({thirty_day_mean:.1f})")
+                logger.info(f"- 90-day Z-score of {z_score:.2f} indicates statistical significance")
                 return historical_data
             else:
                 logger.info(f"No breakout for {term}:")
                 if today_value < 90:
                     logger.info("- Below base threshold of 90")
-                if today_value < historical_mean * 1.5:
-                    logger.info("- Not 50% above average")
+                if today_value < ninety_day_mean * 1.5:
+                    logger.info("- Not 50% above 90-day average")
+                if today_value < thirty_day_mean * 1.3:
+                    logger.info("- Not 30% above 30-day average")
                 if z_score < 2.0:
                     logger.info("- Z-score below threshold")
                 return None
@@ -233,7 +247,20 @@ class TrendScanner:
                 if results:
                     message = f"🚨 Breakout Alert for {category}:\n\n"
                     for r in results:
-                        message += f"• {r['term']}: {r['value']:.1f}\n"
+                        message += f"📈 Term: {r['term']}\n"
+                        message += f"Value: {r['value']:.1f}\n"
+                        
+                        # Add related stocks
+                        message += "\n💼 Related Stocks:\n"
+                        for symbol, company in data['stocks'].items():
+                            message += f"${symbol} - {company}\n"
+                        
+                        message += "\n"  # Add spacing between terms
+                        
+                    # Log the breakout with stocks
+                    logger.info(f"Breakout detected in {category}:")
+                    logger.info(message)
+                    
                     await self.send_telegram_alert(message)
             
             logger.info("Scan cycle complete")

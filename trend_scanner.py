@@ -424,10 +424,15 @@ async def main():
         logger.info(f"Current time: {datetime.now()}")
         scanner = TrendScanner()
         
+        # Initialize Telegram first
+        logger.info("Initializing Telegram...")
+        await scanner.start_app()
+        logger.info("Telegram initialized successfully")
+        
         # Create scheduler
         scheduler = AsyncIOScheduler()
         
-        # Schedule the scan to run at 10:15 UTC daily
+        # Schedule the scan to run at 12:30 UTC daily
         scheduler.add_job(
             scanner.run_continuous_scan,
             CronTrigger(hour=12, minute=30),
@@ -436,6 +441,7 @@ async def main():
         
         # Start the scheduler
         scheduler.start()
+        logger.info("Scheduler started. Waiting for next scan time...")
         
         # Keep the program running
         try:

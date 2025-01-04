@@ -68,17 +68,57 @@ class TrendScanner:
         """Get recent trend data with improved rate limiting"""
         try:
             logger.info(f"Getting trend data for: {term}")
-            ninety_day_timeframe = f"{(datetime.now() - timedelta(days=90)).strftime('%Y-%m-%d')} {datetime.now().strftime('%Y-%m-%d')}"
+            
+            # First get today's data
+            today = datetime.now().date()
+            today_str = today.strftime('%Y-%m-%d')
+            
+            # Add delay before API call
+            await asyncio.sleep(random.uniform(5, 10))
+            
+            # Get today's data first
+            self.pytrends.build_payload([term], timeframe=f'{today_str} {today_str}', geo='US')
+            today_data = self.pytrends.interest_over_time()
+            
+            if today_data is None or today_data.empty:
+                logger.info(f"No today's data available for: {term}")
+                return None
+            
+            today_value = float(today_data[term].iloc[-1])
+            logger.info(f"\nToday's data for {term}:")
+            logger.info(f"Today's value: {today_value}")
+            
+            # If today's value is less than 90, no need to check historical data
+            if today_value < 90:
+                logger.info(f"Today's value ({today_value}) is below threshold of 90")
+                return None
+            
+            # If today's value is high enough, get 90-day data for comparison
+            ninety_day_timeframe = f"{(today - timedelta(days=90)).strftime('%Y-%m-%d')} {today_str}"
+            await asyncio.sleep(random.uniform(5, 10))
             
             self.pytrends.build_payload([term], timeframe=ninety_day_timeframe, geo='US')
-            trend_data = self.pytrends.interest_over_time()
+            historical_data = self.pytrends.interest_over_time()
             
-            if trend_data is None or trend_data.empty:
-                logger.info(f"No data available for: {term}")
+            if historical_data is None or historical_data.empty:
+                logger.info(f"No historical data available for: {term}")
                 return None
-                
-            logger.info(f"Successfully retrieved data for: {term}")
-            return trend_data
+            
+            # Log historical data statistics
+            historical_max = historical_data[term].max()
+            historical_mean = historical_data[term].mean()
+            logger.info(f"\nHistorical data for {term}:")
+            logger.info(f"90-day maximum: {historical_max}")
+            logger.info(f"90-day average: {historical_mean:.2f}")
+            logger.info(f"Today vs Historical max: {today_value/historical_max*100:.1f}%")
+            
+            # Return data only if today's value is significant
+            if today_value >= historical_max:
+                logger.info(f"Today's value ({today_value}) is higher than historical maximum ({historical_max})")
+                return historical_data
+            else:
+                logger.info(f"Today's value ({today_value}) is not higher than historical maximum ({historical_max})")
+                return None
             
         except Exception as e:
             logger.error(f"Error getting trend data: {str(e)}")

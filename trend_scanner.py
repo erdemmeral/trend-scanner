@@ -76,141 +76,141 @@ class TrendScanner:
             'AI and Machine Learning': {
                 'search_terms': {
                     'artificial intelligence': {
-                        'NVDA': 'NVIDIA - AI chips & computing',
                         'AI': 'C3.ai - Enterprise AI platform',
                         'PLTR': 'Palantir - AI analytics',
                         'BBAI': 'BigBear.ai - AI defense solutions',
                         'SOUN': 'SoundHound - Voice AI',
                         'AGFY': 'Agrify - AI cultivation tech',
-                        'MTTR': 'Matterport - AI spatial data'
+                        'MTTR': 'Matterport - AI spatial data',
+                        'THNX': 'THINKsmart - AI fintech'
                     },
                     'machine learning': {
-                        'NVDA': 'NVIDIA - ML hardware',
                         'AI': 'C3.ai - ML solutions',
-                        'MSFT': 'Microsoft - Azure ML',
                         'THNX': 'THINKsmart - ML fintech',
                         'CELU': 'Celularity - ML biotech',
                         'DMTK': 'DermTech - ML diagnostics',
-                        'MARK': 'Remark - ML analytics'
+                        'MARK': 'Remark - ML analytics',
+                        'AITX': 'Artificial Intel Tech - ML robotics',
+                        'VTSI': 'VirTra - ML training'
                     },
                     'deep learning': {
-                        'NVDA': 'NVIDIA - DL hardware',
-                        'AMD': 'AMD - DL processors',
-                        'GOOGL': 'Google - DL research',
                         'AITX': 'Artificial Intel Tech - Robotics',
                         'VTSI': 'VirTra - DL training systems',
                         'CGNT': 'Cognyte - DL security',
-                        'AUVI': 'Applied UV - DL disinfection'
+                        'AUVI': 'Applied UV - DL disinfection',
+                        'BBAI': 'BigBear.ai - DL analytics',
+                        'SOUN': 'SoundHound - DL voice',
+                        'CELU': 'Celularity - DL biotech'
                     }
                 }
             },
             'Cloud Computing': {
                 'search_terms': {
                     'cloud computing': {
-                        'AMZN': 'Amazon - AWS leader',
-                        'MSFT': 'Microsoft - Azure platform',
-                        'GOOGL': 'Google - GCP provider',
                         'DOMO': 'Domo - Cloud BI platform',
                         'NCNO': 'nCino - Banking cloud',
                         'SUMO': 'Sumo Logic - Cloud analytics',
-                        'CLDR': 'Cloudera - Data cloud'
+                        'CLDR': 'Cloudera - Data cloud',
+                        'ESTC': 'Elastic - Search cloud',
+                        'DCBO': 'Docebo - Learning cloud',
+                        'BIGC': 'BigCommerce - E-com cloud'
                     },
                     'cloud security': {
                         'NET': 'Cloudflare - Edge security',
-                        'PANW': 'Palo Alto - Security platform',
-                        'CRWD': 'CrowdStrike - Endpoint security',
                         'ZS': 'Zscaler - Cloud security',
                         'TENB': 'Tenable - Vulnerability mgmt',
                         'SAIL': 'SailPoint - Identity security',
-                        'RDWR': 'Radware - Cloud protection'
+                        'RDWR': 'Radware - Cloud protection',
+                        'SFET': 'Safe-T Group - Zero trust',
+                        'SCWX': 'SecureWorks - Security services'
                     }
                 }
             },
             'Cybersecurity': {
                 'search_terms': {
                     'cybersecurity': {
-                        'CRWD': 'CrowdStrike - Endpoint protection',
-                        'PANW': 'Palo Alto - Network security',
-                        'FTNT': 'Fortinet - Security solutions',
                         'VRNS': 'Varonis - Data security',
                         'SCWX': 'SecureWorks - Security services',
                         'CYBE': 'CyberOptics - Inspection tech',
-                        'CFBK': 'CF Bankshares - Cyber banking'
+                        'CFBK': 'CF Bankshares - Cyber banking',
+                        'SFET': 'Safe-T Group - Zero trust',
+                        'CSPI': 'CSP Inc - Security solutions',
+                        'HACK': 'ETFMG Cyber Security ETF'
                     },
                     'ransomware protection': {
-                        'CRWD': 'CrowdStrike - Ransomware defense',
                         'S': 'SentinelOne - AI security',
                         'VRNS': 'Varonis - Data protection',
                         'OSPN': 'OneSpan - Digital security',
-                        'CYBR': 'CyberArk - Access security',
                         'SFET': 'Safe-T Group - Zero trust',
-                        'CSPI': 'CSP Inc - Security solutions'
+                        'CSPI': 'CSP Inc - Security solutions',
+                        'SCWX': 'SecureWorks - Security',
+                        'CYBE': 'CyberOptics - Protection'
                     }
                 }
             },
             'Quantum Computing': {
                 'search_terms': {
                     'quantum computing': {
-                        'IBM': 'IBM - Quantum research leader',
                         'IONQ': 'IonQ - Trapped ion quantum',
                         'RGTI': 'Rigetti - Superconducting quantum',
                         'QUBT': 'Quantum Computing - Software',
                         'ARQQ': 'Arqit Quantum - Encryption',
                         'QTUM': 'Defiance Quantum ETF',
-                        'SNPS': 'Synopsys - Quantum design'
+                        'QTWO': 'Q2 Holdings - Quantum finance',
+                        'QMCO': 'Quantum Corp - Storage'
                     },
                     'quantum encryption': {
                         'ARQQ': 'Arqit Quantum - Post-quantum crypto',
-                        'IBM': 'IBM - Quantum security',
                         'QUBT': 'Quantum Computing - Encryption',
                         'IRNT': 'IronNet - Quantum defense',
                         'QMCO': 'Quantum Corp - Security storage',
                         'CEVA': 'CEVA - Quantum IoT security',
-                        'QLYS': 'Qualys - Security platform'
+                        'QTWO': 'Q2 Holdings - Quantum security',
+                        'RGTI': 'Rigetti - Quantum solutions'
                     }
                 }
             },
             'Semiconductor Industry': {
                 'search_terms': {
                     'semiconductor shortage': {
-                        'TSM': 'TSMC - Leading foundry',
-                        'INTC': 'Intel - US chipmaker',
-                        'UMC': 'United Micro - Foundry services',
                         'POWI': 'Power Integrations - Power chips',
                         'DIOD': 'Diodes Inc - Components',
                         'IMOS': 'ChipMOS - Testing services',
-                        'MPWR': 'Monolithic Power - Power solutions'
+                        'MPWR': 'Monolithic Power - Power solutions',
+                        'LSCC': 'Lattice Semi - FPGA',
+                        'CRUS': 'Cirrus Logic - Mixed-signal',
+                        'SIMO': 'Silicon Motion - Controllers'
                     },
                     'chip manufacturing': {
-                        'AMAT': 'Applied Materials - Equipment',
-                        'ASML': 'ASML - Lithography systems',
-                        'LRCX': 'Lam Research - Fabrication',
                         'ACLS': 'Axcelis - Ion implantation',
                         'UCTT': 'Ultra Clean - Support systems',
                         'CCMP': 'CMC Materials - Materials',
-                        'KLIC': 'Kulicke & Soffa - Packaging'
+                        'KLIC': 'Kulicke & Soffa - Packaging',
+                        'FORM': 'FormFactor - Testing',
+                        'ICHR': 'Ichor - Fluid delivery',
+                        'MKSI': 'MKS Instruments - Process control'
                     }
                 }
             },
             'DevOps and SRE': {
                 'search_terms': {
                     'DevOps': {
-                        'TEAM': 'Atlassian - Collaboration tools',
-                        'DDOG': 'Datadog - Monitoring',
                         'PD': 'PagerDuty - Incident response',
-                        'ESTC': 'Elastic - Search & analytics',
                         'NEWR': 'New Relic - Observability',
                         'APPN': 'Appian - Low-code platform',
-                        'PRGS': 'Progress Software - DevOps tools'
+                        'PRGS': 'Progress Software - DevOps tools',
+                        'FROG': 'JFrog - DevOps platform',
+                        'ESTC': 'Elastic - Search platform',
+                        'PCTY': 'Paylocity - HR DevOps'
                     },
                     'Site Reliability Engineering': {
-                        'DDOG': 'Datadog - SRE platform',
-                        'NOW': 'ServiceNow - Workflow automation',
+                        'PD': 'PagerDuty - SRE platform',
                         'DT': 'Dynatrace - Application monitoring',
                         'FROG': 'JFrog - Artifact management',
                         'RPD': 'Rapid7 - Security operations',
                         'MNTV': 'Momentive - User feedback',
-                        'SCWX': 'SecureWorks - Security ops'
+                        'SCWX': 'SecureWorks - Security ops',
+                        'NEWR': 'New Relic - Performance'
                     }
                 }
             },
@@ -218,74 +218,74 @@ class TrendScanner:
                 'search_terms': {
                     'edge computing': {
                         'FSLY': 'Fastly - Edge cloud platform',
-                        'NET': 'Cloudflare - Edge network',
-                        'AKAM': 'Akamai - Edge delivery',
                         'LLNW': 'Limelight - Edge services',
                         'GLBE': 'Global-E - Edge commerce',
-                        'EQIX': 'Equinix - Edge data centers',
-                        'DCBO': 'Docebo - Edge learning'
+                        'DCBO': 'Docebo - Edge learning',
+                        'CLPS': 'CLPS Inc - Edge solutions',
+                        'ALOT': 'AstroNova - Edge systems',
+                        'DGII': 'Digi International - IoT edge'
                     },
                     'edge AI': {
-                        'NVDA': 'NVIDIA - Edge AI chips',
-                        'INTC': 'Intel - Edge processors',
-                        'XLNX': 'Xilinx - Edge FPGA',
                         'CEVA': 'CEVA - Edge AI IP',
                         'LSCC': 'Lattice Semi - Edge FPGA',
                         'QUIK': 'QuickLogic - Edge solutions',
-                        'MTSI': 'MACOM - Edge RF'
+                        'MTSI': 'MACOM - Edge RF',
+                        'SWIR': 'Sierra Wireless - Edge IoT',
+                        'DGII': 'Digi International - Edge AI',
+                        'AMBA': 'Ambarella - Edge vision'
                     },
                     'IoT edge': {
-                        'CSCO': 'Cisco - Network edge',
-                        'DELL': 'Dell - Edge computing',
-                        'HPE': 'HP Enterprise - Edge systems',
                         'SWIR': 'Sierra Wireless - IoT modules',
                         'IOTC': 'IoTecha - EV charging',
                         'DGII': 'Digi International - IoT solutions',
-                        'ATEN': 'A10 Networks - Edge security'
+                        'ATEN': 'A10 Networks - Edge security',
+                        'ALOT': 'AstroNova - IoT systems',
+                        'KTOS': 'Kratos - IoT defense',
+                        'CAMP': 'CalAmp - IoT platforms'
                     }
                 }
             },
             'Robotics and Automation': {
                 'search_terms': {
                     'industrial robotics': {
-                        'ABB': 'ABB Ltd - Industrial automation',
-                        'FANUY': 'Fanuc - Robot manufacturing',
-                        'SIEGY': 'Siemens - Factory automation',
                         'STRC': 'Sarcos - Robotic systems',
                         'BKSY': 'BlackSky - Space robotics',
                         'AVAV': 'AeroVironment - Drone systems',
-                        'NNDM': 'Nano Dimension - 3D robotics'
+                        'NNDM': 'Nano Dimension - 3D robotics',
+                        'CGNX': 'Cognex - Machine vision',
+                        'BRQS': 'Borqs - Robotics solutions',
+                        'BWXT': 'BWX Technologies - Nuclear robotics'
                     },
                     'warehouse robotics': {
-                        'AMZN': 'Amazon - Warehouse automation',
-                        'KION': 'KION Group - Material handling',
-                        'THNKY': 'THK Co - Motion control',
                         'BKNG': 'Berkshire Grey - Fulfillment',
                         'STRC': 'Sarcos Technology - Logistics',
                         'RGDX': 'Righthand Robotics - Picking',
-                        'VRRM': 'Verra Mobility - Transport'
+                        'VRRM': 'Verra Mobility - Transport',
+                        'THNK': 'Think Robotics - Automation',
+                        'BWXT': 'BWX Tech - Material handling',
+                        'CGNX': 'Cognex - Vision systems'
                     },
                     'medical robotics': {
-                        'ISRG': 'Intuitive Surgical - Surgery',
-                        'MASI': 'Masimo - Patient monitoring',
-                        'STXS': 'Stereotaxis - Surgical robots',
                         'ASXC': 'Asensus - Digital surgery',
                         'RBOT': 'Vicarious - Surgical AI',
                         'TRXC': 'TransEnterix - Minimally invasive',
-                        'NVRO': 'Nevro - Neural robotics'
+                        'NVRO': 'Nevro - Neural robotics',
+                        'STXS': 'Stereotaxis - Surgical robots',
+                        'RMTI': 'Rockwell Medical - Medical automation',
+                        'BIOL': 'Biolase - Dental robotics'
                     }
                 }
             },
             'Electric Vehicles': {
                 'search_terms': {
                     'electric vehicles': {
-                        'TSLA': 'Tesla - EV leader',
-                        'NIO': 'NIO - Chinese EVs',
-                        'XPEV': 'XPeng - Smart EVs',
                         'FSR': 'Fisker - EV design',
                         'GOEV': 'Canoo - Lifestyle EVs',
                         'WKHS': 'Workhorse - Delivery EVs',
-                        'SOLO': 'ElectraMeccanica - Urban EVs'
+                        'SOLO': 'ElectraMeccanica - Urban EVs',
+                        'MULN': 'Mullen - EV manufacturer',
+                        'AYRO': 'AYRO - Light EVs',
+                        'IDEX': 'Ideanomics - EV adoption'
                     },
                     'EV charging': {
                         'CHPT': 'ChargePoint - Charging network',
@@ -293,7 +293,7 @@ class TrendScanner:
                         'EVGO': 'EVgo - Fast charging',
                         'VLTA': 'Volta - Ad-supported charging',
                         'NXGN': 'NexGen - Power solutions',
-                        'SBE': 'Switchback - Infrastructure',
+                        'DCFC': 'Tritium - DC charging',
                         'ZVIA': 'Zevia - Fleet charging'
                     },
                     'EV battery': {
@@ -302,8 +302,8 @@ class TrendScanner:
                         'MVST': 'Microvast - Fast charging',
                         'SLDP': 'Solid Power - Next-gen',
                         'ENVX': 'Enovix - Silicon batteries',
-                        'DCFC': 'Tritium - DC charging',
-                        'BATT': 'Battery Tech ETF'
+                        'AMPX': 'Amprius - Battery tech',
+                        'IVAN': 'Ivanhoe Electric - Battery materials'
                     }
                 }
             },
@@ -311,61 +311,43 @@ class TrendScanner:
                 'search_terms': {
                     'space technology': {
                         'SPCE': 'Virgin Galactic - Space tourism',
-                        'BA': 'Boeing - Space systems',
-                        'LMT': 'Lockheed Martin - Satellites',
                         'MNTS': 'Momentus - Space transport',
                         'ASTR': 'Astra - Launch services',
                         'BKSY': 'BlackSky - Earth imaging',
-                        'IRDM': 'Iridium - Satellite comms'
+                        'IRDM': 'Iridium - Satellite comms',
+                        'RKT': 'Rocket Lab - Launch services',
+                        'SATL': 'Satellogic - Earth observation'
                     },
                     'satellite internet': {
-                        'STRL': 'Starlink - Global internet',
-                        'VSAT': 'Viasat - Broadband',
-                        'MAXR': 'Maxar - Earth intelligence',
                         'ASTS': 'AST SpaceMobile - Space 5G',
                         'GSAT': 'Globalstar - IoT comms',
                         'OSAT': 'Orbsat - Satellite IoT',
-                        'GILT': 'Gilat - VSAT networks'
-                    },
-                    'space exploration': {
-                        'RKLB': 'Rocket Lab - Launch provider',
-                        'SPCE': 'Virgin Galactic - Tourism',
-                        'MNTS': 'Momentus - In-space transport',
-                        'VORB': 'Virgin Orbit - Air launch',
-                        'NSE': 'NanoAvionics - Small sats',
-                        'VACQ': 'Vector - Small rockets',
-                        'SRAC': 'Stable Road - Space tech'
+                        'GILT': 'Gilat - VSAT networks',
+                        'MAXR': 'Maxar - Earth intelligence',
+                        'LLAP': 'Terran Orbital - Satellites',
+                        'SPIR': 'Spire Global - Space data'
                     }
                 }
             },
             'Healthcare Technology': {
                 'search_terms': {
                     'digital health': {
-                        'TDOC': 'Teladoc - Telehealth',
                         'AMWL': 'Amwell - Virtual care',
                         'DOCS': 'Doximity - Medical network',
                         'ONEM': '1Life - Primary care',
                         'PHIC': 'Population Health - Analytics',
                         'PSTX': 'Poseida - Digital therapeutics',
-                        'RXRX': 'Recursion - AI drug discovery'
+                        'RXRX': 'Recursion - AI drug discovery',
+                        'CERT': 'Certara - Bio simulation'
                     },
                     'telemedicine': {
-                        'TDOC': 'Teladoc - Virtual care',
                         'AMWL': 'Amwell - Telehealth',
                         'ONEM': '1Life - Digital health',
                         'SGFY': 'Signify - Home health',
                         'OPRX': 'OptimizeRx - Digital health',
                         'WELL': 'Well Health - Virtual care',
-                        'TALK': 'Talkspace - Mental health'
-                    },
-                    'medical AI': {
-                        'ISRG': 'Intuitive - Robotic surgery',
-                        'NVTA': 'Invitae - Genetic AI',
-                        'SDGR': 'Schrödinger - Drug discovery',
-                        'RXRX': 'Recursion - AI biotech',
-                        'SEER': 'Seer - Proteomics AI',
-                        'DMTK': 'DermTech - Skin AI',
-                        'OTRK': 'Ontrak - Behavioral AI'
+                        'TALK': 'Talkspace - Mental health',
+                        'LFMD': 'LifeMD - Telehealth platform'
                     }
                 }
             },
@@ -388,15 +370,6 @@ class TrendScanner:
                         'GRPH': 'Graphite - Cell therapy',
                         'PRME': 'Prime - Gene editing',
                         'DTIL': 'Precision - Gene editing'
-                    },
-                    'mRNA technology': {
-                        'MRNA': 'Moderna - mRNA platform',
-                        'BNTX': 'BioNTech - mRNA therapy',
-                        'ARCT': 'Arcturus - mRNA delivery',
-                        'TBIO': 'Translate Bio - mRNA tech',
-                        'PCVX': 'Vaxcyte - Cell-free tech',
-                        'CVAC': 'CureVac - mRNA platform',
-                        'RWLK': 'ReWalk - RNA therapy'
                     }
                 }
             },
@@ -434,75 +407,75 @@ class TrendScanner:
             'Metaverse and AR/VR': {
                 'search_terms': {
                     'metaverse': {
-                        'META': 'Meta - VR platform',
                         'RBLX': 'Roblox - Gaming metaverse',
-                        'U': 'Unity - 3D platform',
                         'MTTR': 'Matterport - Digital twins',
                         'IMMR': 'Immersion - Haptics',
                         'VRAR': 'VR/AR ETF',
-                        'PLTK': 'Playtika - Virtual worlds'
+                        'PLTK': 'Playtika - Virtual worlds',
+                        'SLGG': 'Super League - Gaming',
+                        'WIMI': 'WiMi - Hologram AR'
                     },
                     'virtual reality': {
-                        'META': 'Meta - Quest VR',
-                        'SONY': 'Sony - PSVR',
-                        'MSFT': 'Microsoft - Mixed reality',
                         'VUZI': 'Vuzix - AR glasses',
                         'KOPN': 'Kopin - VR displays',
                         'HIMX': 'Himax - VR chips',
-                        'IMAX': 'IMAX - VR experiences'
+                        'IMAX': 'IMAX - VR experiences',
+                        'LKCO': 'Luokung - VR mapping',
+                        'WAVX': 'WaveBridge - VR tech',
+                        'VRAR': 'Proshares VR ETF'
                     },
                     'augmented reality': {
-                        'SNAP': 'Snap - AR platform',
-                        'MSFT': 'Microsoft - HoloLens',
-                        'AAPL': 'Apple - AR development',
                         'VUZI': 'Vuzix - Smart glasses',
                         'WAVX': 'WaveBridge - AR tech',
-                        'MAXR': 'Maxar - AR mapping',
-                        'KOPN': 'Kopin - AR displays'
+                        'KOPN': 'Kopin - AR displays',
+                        'WIMI': 'WiMi - AR platform',
+                        'LKCO': 'Luokung - AR mapping',
+                        'IMMR': 'Immersion - AR haptics',
+                        'MTTR': 'Matterport - AR spaces'
                     }
                 }
             },
             'Clean Energy Tech': {
                 'search_terms': {
                     'renewable energy': {
-                        'NEE': 'NextEra - Clean power',
-                        'ENPH': 'Enphase - Solar tech',
-                        'SEDG': 'SolarEdge - Power opt',
                         'NOVA': 'Sunnova - Solar service',
                         'SPWR': 'SunPower - Solar systems',
                         'CSIQ': 'Canadian Solar',
-                        'RUN': 'Sunrun - Solar install'
+                        'RUN': 'Sunrun - Solar install',
+                        'MAXN': 'Maxeon - Solar tech',
+                        'ARRY': 'Array Tech - Solar tracking',
+                        'AZRE': 'Azure Power - Solar dev'
                     },
                     'green hydrogen': {
-                        'PLUG': 'Plug Power - H2 solutions',
                         'BE': 'Bloom Energy - Fuel cells',
                         'FCEL': 'FuelCell - Clean power',
                         'BLDP': 'Ballard - Transport H2',
                         'HTOO': 'Fusion Fuel - Green H2',
                         'HYON': 'HYON - H2 fueling',
-                        'HYSR': 'SunHydrogen - Solar H2'
+                        'HYSR': 'SunHydrogen - Solar H2',
+                        'PCELL': 'PowerCell - H2 solutions'
                     },
                     'energy storage': {
-                        'TSLA': 'Tesla - Battery tech',
                         'STEM': 'Stem Inc - AI storage',
                         'FLUX': 'Flux Power - Batteries',
                         'EOSE': 'Eos Energy - Storage',
-                        'BATT': 'Battery ETF',
                         'FREYR': 'FREYR - Battery cells',
-                        'MVST': 'Microvast - Fast charge'
+                        'MVST': 'Microvast - Fast charge',
+                        'GEVO': 'Gevo - Renewable storage',
+                        'BLDP': 'Ballard - H2 storage'
                     }
                 }
             },
             'Smart Manufacturing': {
                 'search_terms': {
                     'industrial IoT': {
-                        'HON': 'Honeywell - IIoT platform',
-                        'ROK': 'Rockwell - Factory auto',
                         'PTC': 'PTC Inc - IoT software',
                         'THNX': 'THINKsmart - IoT solutions',
                         'ONTO': 'Onto Innovation - IoT semi',
                         'SWIR': 'Sierra - IoT networking',
-                        'IOTC': 'IoTecha - Industrial IoT'
+                        'IOTC': 'IoTecha - Industrial IoT',
+                        'KTOS': 'Kratos - Defense IoT',
+                        'DGII': 'Digi Int - IoT connectivity'
                     },
                     '3D printing': {
                         'DDD': '3D Systems - Printing',
@@ -514,71 +487,44 @@ class TrendScanner:
                         'PRLB': 'Proto Labs - Custom parts'
                     },
                     'predictive maintenance': {
-                        'PTC': 'PTC - IoT platform',
-                        'ADSK': 'Autodesk - Digital twin',
-                        'DDOG': 'Datadog - Monitoring',
                         'AZPN': 'Aspen Tech - Asset opt',
                         'VRNS': 'Varonis - Data analysis',
                         'PRCP': 'Perceptron - Measurement',
-                        'SWKS': 'Skyworks - Sensors'
+                        'SWKS': 'Skyworks - Sensors',
+                        'LUNA': 'Luna - Fiber sensing',
+                        'CAMP': 'CalAmp - IoT monitoring',
+                        'DGII': 'Digi Int - Remote monitoring'
                     }
                 }
             },
             '5G and Connectivity': {
                 'search_terms': {
                     '5G network': {
-                        'ERIC': 'Ericsson - Network equipment',
-                        'NOK': 'Nokia - 5G infrastructure',
-                        'QCOM': 'Qualcomm - 5G chips',
                         'LITE': 'Lumentum - Optical solutions',
                         'INFN': 'Infinera - Network systems',
                         'AVNW': 'Aviat - Wireless transport',
-                        'CLFD': 'Clearfield - Fiber connectivity'
-                    },
-                    '5G technology': {
-                        'QCOM': 'Qualcomm - 5G modems',
-                        'ERIC': 'Ericsson - 5G solutions',
-                        'TMUS': 'T-Mobile - 5G carrier',
-                        'COMM': 'CommScope - Network infra',
-                        'IDCC': 'InterDigital - 5G patents',
-                        'SOL': 'Renesola - 5G power',
-                        'PCTI': 'PCTEL - 5G antennas'
+                        'CLFD': 'Clearfield - Fiber connectivity',
+                        'DZSI': 'DZS Inc - 5G solutions',
+                        'VIAV': 'Viavi - Network test',
+                        'CAMP': 'CalAmp - 5G IoT'
                     },
                     'wireless infrastructure': {
-                        'AMT': 'American Tower - Cell towers',
-                        'CCI': 'Crown Castle - Fiber/towers',
-                        'SBAC': 'SBA Comm - Tower operator',
                         'UNIT': 'Uniti Group - Fiber networks',
                         'CMBM': 'Cambium - Wireless solutions',
                         'GILT': 'Gilat - Satellite comms',
-                        'ATEX': 'Anterix - Private networks'
-                    },
-                    'network virtualization': {
-                        'VMW': 'VMware - Virtualization',
-                        'CSCO': 'Cisco - Network solutions',
-                        'RBBN': 'Ribbon - Cloud networking',
-                        'ANET': 'Arista - Cloud networking',
-                        'FFIV': 'F5 - App delivery',
-                        'RVBD': 'Riverbed - WAN opt',
-                        'CWAN': 'Clearway - Network services'
-                    },
-                    '5G applications': {
-                        'QCOM': 'Qualcomm - Mobile platforms',
-                        'SWKS': 'Skyworks - RF solutions',
-                        'KEYS': 'Keysight - Test equipment',
-                        'VIAV': 'Viavi - Network test',
-                        'MTSI': 'MACOM - RF components',
-                        'RESN': 'Resonant - RF filters',
-                        'AIRG': 'Airgain - Antenna systems'
+                        'ATEX': 'Anterix - Private networks',
+                        'AVNW': 'Aviat Networks - Transport',
+                        'DZSI': 'DZS Inc - Infrastructure',
+                        'CLFD': 'Clearfield - Fiber'
                     },
                     'mobile edge computing': {
-                        'AKAM': 'Akamai - Edge platform',
                         'FSLY': 'Fastly - Edge compute',
-                        'NET': 'Cloudflare - Edge security',
-                        'DDOG': 'Datadog - Edge monitoring',
                         'GLBE': 'Global-E - Edge commerce',
                         'LLNW': 'Limelight - Edge delivery',
-                        'EQIX': 'Equinix - Edge data centers'
+                        'DDOG': 'Datadog - Edge monitoring',
+                        'ALOT': 'AstroNova - Edge systems',
+                        'CLPS': 'CLPS Inc - Edge solutions',
+                        'DGII': 'Digi Int - Edge IoT'
                     }
                 }
             },
@@ -694,8 +640,43 @@ class TrendScanner:
             logger.error(f"Error getting trend data: {str(e)}")
             return None
 
+    async def check_stock_trends(self, term, stocks_dict):
+        """Check trends for related stocks"""
+        stock_results = []
+        
+        for symbol, description in stocks_dict.items():
+            try:
+                logger.info(f"Checking stock trend for {symbol} ({description})")
+                stock_data = await self.get_recent_trend_data(f"{symbol} stock")
+                
+                if stock_data is not None:
+                    stock_value = float(stock_data[f"{symbol} stock"].iloc[-1])
+                    stock_mean = stock_data[f"{symbol} stock"][:-1].mean()
+                    stock_std = stock_data[f"{symbol} stock"][:-1].std()
+                    z_score = (stock_value - stock_mean) / stock_std if stock_std > 0 else 0
+                    
+                    logger.info(f"Stock trend stats for {symbol}:")
+                    logger.info(f"Current value: {stock_value:.1f}")
+                    logger.info(f"Mean: {stock_mean:.1f}")
+                    logger.info(f"Z-score: {z_score:.1f}")
+                    
+                    # Check if stock has similar breakout pattern
+                    if stock_value >= 75 and z_score >= 1.5:  # Lower thresholds for stocks
+                        stock_results.append({
+                            'symbol': symbol,
+                            'description': description,
+                            'value': stock_value,
+                            'z_score': z_score
+                        })
+                
+            except Exception as e:
+                logger.error(f"Error checking stock {symbol}: {str(e)}")
+                continue
+                
+        return stock_results
+
     async def scan_trends_with_notification(self, search_terms, category):
-        """Scan trends and send notifications"""
+        """Scan trends and send notifications with stock validation"""
         results = []
         
         for term in search_terms:
@@ -707,10 +688,19 @@ class TrendScanner:
                     max_value = trend_data[term].max()
                     if max_value >= 90:
                         logger.info(f"Breakout detected for {term}: {max_value}")
+                        
+                        # Check related stocks
+                        logger.info(f"Checking related stocks for {term}...")
+                        stock_results = await self.check_stock_trends(
+                            term,
+                            self.categories[category]['search_terms'][term]
+                        )
+                        
                         results.append({
                             'term': term,
                             'value': max_value,
-                            'category': category
+                            'category': category,
+                            'stocks': stock_results
                         })
                 
             except Exception as e:
@@ -742,11 +732,17 @@ class TrendScanner:
                         message += f"📈 Term: {term}\n"
                         message += f"Value: {r['value']:.1f}\n"
                         
-                        # Add stocks specific to this term
-                        message += "\n💼 Related Stocks:\n"
-                        term_stocks = data['search_terms'][term]
-                        for symbol, company in term_stocks.items():
-                            message += f"${symbol} - {company}\n"
+                        # Add stocks with breakout patterns
+                        if r['stocks']:
+                            message += "\n💼 Related Stocks with High Interest:\n"
+                            for stock in r['stocks']:
+                                message += f"${stock['symbol']} - {stock['description']}\n"
+                                message += f"Interest: {stock['value']:.1f} (Z-score: {stock['z_score']:.1f})\n"
+                        else:
+                            message += "\n💼 Related Stocks (No significant patterns):\n"
+                            term_stocks = data['search_terms'][term]
+                            for symbol, company in term_stocks.items():
+                                message += f"${symbol} - {company}\n"
                         
                         message += "\n"  # Add spacing between terms
                     
@@ -804,7 +800,7 @@ async def main():
         # Schedule the scan to run at 12:30 UTC daily
         scheduler.add_job(
             scanner.run_continuous_scan,
-            CronTrigger(hour=17, minute=15),
+            CronTrigger(hour=18, minute=20),
             name='daily_scan'
         )
         

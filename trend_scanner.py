@@ -44,19 +44,32 @@ if not TELEGRAM_CHAT_IDS:
 class TrendScanner:
     def __init__(self):
         self.telegram = None
-        # Set timezone to US Eastern (360 = Central Time)
+        # Set timezone to US Eastern and add user agent
         self.pytrends = TrendReq(
             hl='en-US',  # Language set to US English
             tz=240,      # Eastern Time (ET)
-            geo='US'     # Default geo location to US
+            timeout=(10,25),  # Connect and read timeout
+            retries=2,   # Number of retries
+            backoff_factor=0.1,
+            requests_args={
+                'headers': {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36',
+                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+                    'Accept-Language': 'en-US,en;q=0.9',
+                    'Accept-Encoding': 'gzip, deflate, br',
+                    'DNT': '1',  # Do Not Track
+                    'Connection': 'keep-alive',
+                    'Upgrade-Insecure-Requests': '1'
+                }
+            }
         )
         self.last_scan_time = None
         self.request_count = 0
         self.last_request_time = time.time()
-        self.request_limit = 10
-        self.cooldown_minutes = 1
+        self.request_limit = 5  # Reduced from 10
+        self.cooldown_minutes = 2  # Increased from 1
         self.consecutive_429s = 0
-        self.base_delay = 5
+        self.base_delay = 10  # Increased from 5
         
         # Initialize categories with term-specific stocks
         self.categories = {
@@ -641,14 +654,17 @@ class TrendScanner:
             
             # Exponential backoff for rate limiting
             max_retries = 3
-            base_delay = 60  # Start with 60 seconds delay
+            base_delay = 120  # Increased to 120 seconds (2 minutes)
             
             for attempt in range(max_retries):
                 try:
                     # Add longer delay between requests
                     delay = base_delay * (2 ** attempt)  # Exponential backoff
-                    logger.info(f"Waiting {delay} seconds before request...")
-                    await asyncio.sleep(delay)
+                    jitter = random.uniform(0.5, 1.5)  # Add random jitter
+                    final_delay = delay * jitter
+                    
+                    logger.info(f"Waiting {final_delay:.1f} seconds before request...")
+                    await asyncio.sleep(final_delay)
                     
                     # Set geo to 'US' for United States
                     self.pytrends.build_payload(
@@ -661,16 +677,18 @@ class TrendScanner:
                     
                     if historical_data is not None:
                         logger.info("Request successful")
-                        break
+                        # Add successful request delay
+                        await asyncio.sleep(random.uniform(30, 60))
+                        return historical_data
                         
                 except Exception as e:
                     if '429' in str(e):
                         if attempt < max_retries - 1:
-                            logger.warning(f"Rate limit hit, retrying in {delay} seconds...")
+                            logger.warning(f"Rate limit hit, retrying in {final_delay} seconds...")
                             continue
                     raise
             
-            # Rest of the method remains the same...
+            return None
             
         except Exception as e:
             logger.error(f"Error getting trend data: {str(e)}")

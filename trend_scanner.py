@@ -821,7 +821,7 @@ async def main():
         # Schedule the scan to run at 12:30 UTC daily
         scheduler.add_job(
             scanner.run_continuous_scan,
-            CronTrigger(hour=12, minute=55),
+            CronTrigger(hour=14, minute=30),
             name='daily_scan'
         )
         

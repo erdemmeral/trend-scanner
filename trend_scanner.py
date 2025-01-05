@@ -646,31 +646,35 @@ class TrendScanner:
         
         for symbol, description in stocks_dict.items():
             try:
-                logger.info(f"Checking stock trend for {symbol} ({description})")
-                stock_data = await self.get_recent_trend_data(f"{symbol} stock")
+                # Extract company name from description (before the dash)
+                company_name = description.split(' - ')[0]
+                logger.info(f"Checking trend for {company_name} ({symbol})")
+                
+                stock_data = await self.get_recent_trend_data(company_name)
                 
                 if stock_data is not None:
-                    stock_value = float(stock_data[f"{symbol} stock"].iloc[-1])
-                    stock_mean = stock_data[f"{symbol} stock"][:-1].mean()
-                    stock_std = stock_data[f"{symbol} stock"][:-1].std()
+                    stock_value = float(stock_data[company_name].iloc[-1])
+                    stock_mean = stock_data[company_name][:-1].mean()
+                    stock_std = stock_data[company_name][:-1].std()
                     z_score = (stock_value - stock_mean) / stock_std if stock_std > 0 else 0
                     
-                    logger.info(f"Stock trend stats for {symbol}:")
+                    logger.info(f"Trend stats for {company_name}:")
                     logger.info(f"Current value: {stock_value:.1f}")
                     logger.info(f"Mean: {stock_mean:.1f}")
                     logger.info(f"Z-score: {z_score:.1f}")
                     
-                    # Check if stock has similar breakout pattern
+                    # Check if company has similar breakout pattern
                     if stock_value >= 75 and z_score >= 1.5:  # Lower thresholds for stocks
                         stock_results.append({
                             'symbol': symbol,
                             'description': description,
+                            'company': company_name,
                             'value': stock_value,
                             'z_score': z_score
                         })
                 
             except Exception as e:
-                logger.error(f"Error checking stock {symbol}: {str(e)}")
+                logger.error(f"Error checking {company_name} ({symbol}): {str(e)}")
                 continue
                 
         return stock_results
@@ -734,15 +738,16 @@ class TrendScanner:
                         
                         # Add stocks with breakout patterns
                         if r['stocks']:
-                            message += "\n💼 Related Stocks with High Interest:\n"
+                            message += "\n💼 Related Companies with High Interest:\n"
                             for stock in r['stocks']:
-                                message += f"${stock['symbol']} - {stock['description']}\n"
+                                message += f"${stock['symbol']} ({stock['company']})\n"
                                 message += f"Interest: {stock['value']:.1f} (Z-score: {stock['z_score']:.1f})\n"
                         else:
-                            message += "\n💼 Related Stocks (No significant patterns):\n"
+                            message += "\n💼 Related Companies (No significant patterns):\n"
                             term_stocks = data['search_terms'][term]
                             for symbol, company in term_stocks.items():
-                                message += f"${symbol} - {company}\n"
+                                company_name = company.split(' - ')[0]
+                                message += f"${symbol} ({company_name})\n"
                         
                         message += "\n"  # Add spacing between terms
                     

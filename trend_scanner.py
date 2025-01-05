@@ -598,15 +598,15 @@ class TrendScanner:
             today_str = today.strftime('%Y-%m-%d')
             ninety_day_timeframe = f"{(today - timedelta(days=90)).strftime('%Y-%m-%d')} {today_str}"
             
-            # Exponential backoff for rate limiting
+            # Reduced delays for rate limiting
             max_retries = 3
-            base_delay = 120  # Increased to 120 seconds (2 minutes)
+            base_delay = 20  # Reduced from 120 to 20 seconds
             
             for attempt in range(max_retries):
                 try:
-                    # Add longer delay between requests
-                    delay = base_delay * (2 ** attempt)  # Exponential backoff
-                    jitter = random.uniform(0.5, 1.5)  # Add random jitter
+                    # Add shorter delay between requests
+                    delay = base_delay * (1.5 ** attempt)  # Reduced exponential factor
+                    jitter = random.uniform(0.8, 1.2)  # Reduced jitter range
                     final_delay = delay * jitter
                     
                     logger.info(f"Waiting {final_delay:.1f} seconds before request...")
@@ -623,8 +623,8 @@ class TrendScanner:
                     
                     if historical_data is not None:
                         logger.info("Request successful")
-                        # Add successful request delay
-                        await asyncio.sleep(random.uniform(30, 60))
+                        # Reduced successful request delay
+                        await asyncio.sleep(random.uniform(5, 10))  # Reduced from 30-60
                         return historical_data
                         
                 except Exception as e:
@@ -717,8 +717,8 @@ class TrendScanner:
             for category, data in self.categories.items():
                 logger.info(f"\nScanning category: {category}")
                 
-                # Add delay between categories
-                await asyncio.sleep(300)  # 5 minutes between categories
+                # Reduced delay between categories
+                await asyncio.sleep(60)  # Reduced from 300 to 60 seconds
                 
                 results = await self.scan_trends_with_notification(
                     list(data['search_terms'].keys()),
@@ -800,7 +800,7 @@ async def main():
         # Schedule the scan to run at 12:30 UTC daily
         scheduler.add_job(
             scanner.run_continuous_scan,
-            CronTrigger(hour=18, minute=20),
+            CronTrigger(hour=18, minute=35),
             name='daily_scan'
         )
         

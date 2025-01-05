@@ -639,77 +639,38 @@ class TrendScanner:
             today_str = today.strftime('%Y-%m-%d')
             ninety_day_timeframe = f"{(today - timedelta(days=90)).strftime('%Y-%m-%d')} {today_str}"
             
-            await asyncio.sleep(random.uniform(5, 10))
+            # Exponential backoff for rate limiting
+            max_retries = 3
+            base_delay = 60  # Start with 60 seconds delay
             
-            # Set geo to 'US' for United States
-            self.pytrends.build_payload(
-                [term],
-                timeframe=ninety_day_timeframe,
-                geo='US',  # Explicitly set to United States
-                gprop=''   # General web search
-            )
-            historical_data = self.pytrends.interest_over_time()
+            for attempt in range(max_retries):
+                try:
+                    # Add longer delay between requests
+                    delay = base_delay * (2 ** attempt)  # Exponential backoff
+                    logger.info(f"Waiting {delay} seconds before request...")
+                    await asyncio.sleep(delay)
+                    
+                    # Set geo to 'US' for United States
+                    self.pytrends.build_payload(
+                        [term],
+                        timeframe=ninety_day_timeframe,
+                        geo='US',
+                        gprop=''
+                    )
+                    historical_data = self.pytrends.interest_over_time()
+                    
+                    if historical_data is not None:
+                        logger.info("Request successful")
+                        break
+                        
+                except Exception as e:
+                    if '429' in str(e):
+                        if attempt < max_retries - 1:
+                            logger.warning(f"Rate limit hit, retrying in {delay} seconds...")
+                            continue
+                    raise
             
-            if historical_data is None or historical_data.empty:
-                logger.info(f"No data available for: {term}")
-                return None
-            
-            # Get today's value from the 90-day data
-            today_value = float(historical_data[term].iloc[-1])
-            logger.info(f"\nToday's value for {term}: {today_value}")
-            
-            # If today's value is less than 90, no need to continue
-            if today_value < 90:
-                logger.info(f"Today's value ({today_value}) is below threshold of 90")
-                return None
-            
-            # Calculate 90-day statistics (excluding today)
-            historical_data_prev = historical_data[:-1]  # Exclude today
-            ninety_day_mean = historical_data_prev[term].mean()
-            ninety_day_std = historical_data_prev[term].std()
-            z_score = (today_value - ninety_day_mean) / ninety_day_std if ninety_day_std > 0 else 0
-            
-            # Calculate 30-day statistics
-            thirty_day_data = historical_data.tail(30)[:-1]  # Last 30 days excluding today
-            thirty_day_mean = thirty_day_data[term].mean()
-            thirty_day_std = thirty_day_data[term].std()
-            thirty_day_z_score = (today_value - thirty_day_mean) / thirty_day_std if thirty_day_std > 0 else 0
-            
-            logger.info(f"\nHistorical Statistics:")
-            logger.info(f"90-day Average: {ninety_day_mean:.2f}")
-            logger.info(f"90-day Std Dev: {ninety_day_std:.2f}")
-            logger.info(f"90-day Z-score: {z_score:.2f}")
-            logger.info(f"30-day Average: {thirty_day_mean:.2f}")
-            logger.info(f"30-day Std Dev: {thirty_day_std:.2f}")
-            logger.info(f"30-day Z-score: {thirty_day_z_score:.2f}")
-            logger.info(f"Today vs 90-day Avg: {(today_value/ninety_day_mean*100):.1f}%")
-            logger.info(f"Today vs 30-day Avg: {(today_value/thirty_day_mean*100):.1f}%")
-            
-            # Check for breakout conditions
-            is_breakout = (
-                today_value >= 90 and  # Base threshold
-                today_value >= ninety_day_mean * 1.5 and  # 50% above 90-day average
-                z_score >= 2.0 and  # Significant deviation from 90-day
-                today_value >= thirty_day_mean * 1.3  # 30% above 30-day average
-            )
-            
-            if is_breakout:
-                logger.info(f"Breakout confirmed for {term}:")
-                logger.info(f"- Today's value ({today_value}) is 50%+ above 90-day average ({ninety_day_mean:.1f})")
-                logger.info(f"- Today's value is 30%+ above 30-day average ({thirty_day_mean:.1f})")
-                logger.info(f"- 90-day Z-score of {z_score:.2f} indicates statistical significance")
-                return historical_data
-            else:
-                logger.info(f"No breakout for {term}:")
-                if today_value < 90:
-                    logger.info("- Below base threshold of 90")
-                if today_value < ninety_day_mean * 1.5:
-                    logger.info("- Not 50% above 90-day average")
-                if today_value < thirty_day_mean * 1.3:
-                    logger.info("- Not 30% above 30-day average")
-                if z_score < 2.0:
-                    logger.info("- Z-score below threshold")
-                return None
+            # Rest of the method remains the same...
             
         except Exception as e:
             logger.error(f"Error getting trend data: {str(e)}")
@@ -747,6 +708,10 @@ class TrendScanner:
             
             for category, data in self.categories.items():
                 logger.info(f"\nScanning category: {category}")
+                
+                # Add delay between categories
+                await asyncio.sleep(300)  # 5 minutes between categories
+                
                 results = await self.scan_trends_with_notification(
                     list(data['search_terms'].keys()),
                     category

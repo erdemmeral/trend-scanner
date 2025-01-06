@@ -13,6 +13,7 @@ from pytrends.request import TrendReq
 import time
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
+import signal
 
 # Set up logging first
 os.makedirs('logs', exist_ok=True)
@@ -40,6 +41,21 @@ if not TELEGRAM_BOT_TOKEN:
 if not TELEGRAM_CHAT_IDS:
     logger.error("TELEGRAM_CHAT_IDS not found in environment variables")
     sys.exit(1)
+
+async def shutdown(loop, signal=None):
+    """Cleanup tasks tied to the service's shutdown."""
+    if signal:
+        logger.info(f"Received exit signal {signal.name}")
+    
+    logger.info("Cleaning up scanner...")
+    tasks = [t for t in asyncio.all_tasks() if t is not asyncio.current_task()]
+    
+    for task in tasks:
+        task.cancel()
+    
+    logger.info(f"Cancelling {len(tasks)} outstanding tasks")
+    await asyncio.gather(*tasks, return_exceptions=True)
+    loop.stop()
 
 class TrendScanner:
     def __init__(self):
@@ -802,31 +818,61 @@ async def main():
         # Create scheduler
         scheduler = AsyncIOScheduler()
         
-        # Schedule the scan to run at 12:30 UTC daily
+        # Run initial scan immediately
+        await scanner.run_continuous_scan()
+        
+        # Schedule scans to run:
+        # 1. Every 24 hours at 19:30 UTC
         scheduler.add_job(
             scanner.run_continuous_scan,
-            CronTrigger(hour=19, minute=30),
+            CronTrigger(hour=22, minute=22),
             name='daily_scan'
+        )   
+        
+        # 2. Add a backup scan every 12 hours
+        scheduler.add_job(
+            scanner.run_continuous_scan,
+            'interval',
+            hours=12,
+            name='interval_scan'
         )
         
         # Start the scheduler
         scheduler.start()
-        logger.info("Scheduler started. Waiting for next scan time...")
+        logger.info("Scheduler started. Running continuous scans...")
         
-        # Keep the program running
-        try:
-            await asyncio.get_event_loop().create_future()  # run forever
-        except (KeyboardInterrupt, SystemExit):
-            pass
-            
+        # Keep the program running with better error handling
+        while True:
+            try:
+                await asyncio.sleep(3600)  # Sleep for 1 hour
+                logger.info("Scanner running... Next scan as scheduled")
+                # Force garbage collection
+                gc.collect()
+            except asyncio.CancelledError:
+                break
+            except Exception as e:
+                logger.error(f"Error in main loop: {str(e)}")
+                await asyncio.sleep(300)  # Wait 5 minutes before continuing
+                
     except Exception as e:
         logger.error(f"Critical error: {str(e)}", exc_info=True)
         raise
 
 if __name__ == "__main__":
     try:
+        # Set up signal handlers for graceful shutdown
+        loop = asyncio.get_event_loop()
+        signals = (signal.SIGHUP, signal.SIGTERM, signal.SIGINT)
+        for s in signals:
+            loop.add_signal_handler(
+                s, lambda s=s: asyncio.create_task(shutdown(loop, signal=s))
+            )
+            
+        # Run the main program
         asyncio.run(main())
     except KeyboardInterrupt:
         logger.info("Shutdown requested")
     except Exception as e:
         logger.error(f"Fatal error: {str(e)}", exc_info=True)
+    finally:
+        logger.info("Shutting down scanner...")

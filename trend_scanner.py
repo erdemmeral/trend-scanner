@@ -842,7 +842,7 @@ async def main():
         # 1. Every 24 hours at 19:30 UTC
         scheduler.add_job(
             scanner.run_continuous_scan,
-            CronTrigger(hour=22, minute=22),
+            CronTrigger(hour=9, minute=02),
             name='daily_scan'
         )   
         

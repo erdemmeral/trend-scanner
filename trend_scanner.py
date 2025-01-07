@@ -605,7 +605,7 @@ class TrendScanner:
         }
 
     async def get_recent_trend_data(self, term):
-        """Get recent trend data with improved rate limiting"""
+        """Get recent trend data with optimized rate limiting"""
         try:
             logger.info(f"Getting trend data for: {term}")
             
@@ -614,21 +614,20 @@ class TrendScanner:
             today_str = today.strftime('%Y-%m-%d')
             ninety_day_timeframe = f"{(today - timedelta(days=90)).strftime('%Y-%m-%d')} {today_str}"
             
-            # Reduced delays for rate limiting
+            # Optimized delays for rate limiting
             max_retries = 3
-            base_delay = 20  # Reduced from 120 to 20 seconds
+            base_delay = 5  # Reduced from 20 to 5 seconds
             
             for attempt in range(max_retries):
                 try:
-                    # Add shorter delay between requests
-                    delay = base_delay * (1.5 ** attempt)  # Reduced exponential factor
-                    jitter = random.uniform(0.8, 1.2)  # Reduced jitter range
+                    # Add minimal delay between requests
+                    delay = base_delay * (1.2 ** attempt)  # Reduced exponential factor
+                    jitter = random.uniform(0.9, 1.1)  # Reduced jitter range
                     final_delay = delay * jitter
                     
                     logger.info(f"Waiting {final_delay:.1f} seconds before request...")
                     await asyncio.sleep(final_delay)
                     
-                    # Set geo to 'US' for United States
                     self.pytrends.build_payload(
                         [term],
                         timeframe=ninety_day_timeframe,
@@ -639,14 +638,14 @@ class TrendScanner:
                     
                     if historical_data is not None:
                         logger.info("Request successful")
-                        # Reduced successful request delay
-                        await asyncio.sleep(random.uniform(5, 10))  # Reduced from 30-60
+                        await asyncio.sleep(2)  # Minimal delay after success
                         return historical_data
                         
                 except Exception as e:
                     if '429' in str(e):
+                        logger.warning(f"Rate limit hit on attempt {attempt + 1}")
                         if attempt < max_retries - 1:
-                            logger.warning(f"Rate limit hit, retrying in {final_delay} seconds...")
+                            await asyncio.sleep(30)  # Fixed 30-second cooldown on 429
                             continue
                     raise
             
@@ -730,53 +729,71 @@ class TrendScanner:
         return results
 
     async def run_continuous_scan(self):
-        """Run a single scan cycle"""
+        """Run a single scan cycle with batch processing"""
         try:
             logger.info("Starting scan cycle...")
             
-            for category, data in self.categories.items():
-                logger.info(f"\nScanning category: {category}")
+            # Process categories in smaller batches
+            batch_size = 3
+            categories = list(self.categories.items())
+            
+            for i in range(0, len(categories), batch_size):
+                batch = dict(categories[i:i + batch_size])
                 
-                # Reduced delay between categories
-                await asyncio.sleep(60)  # Reduced from 300 to 60 seconds
+                # Process batch concurrently
+                tasks = []
+                for category, data in batch.items():
+                    logger.info(f"\nScanning category: {category}")
+                    task = self.scan_trends_with_notification(
+                        list(data['search_terms'].keys()),
+                        category
+                    )
+                    tasks.append(task)
                 
-                results = await self.scan_trends_with_notification(
-                    list(data['search_terms'].keys()),
-                    category
-                )
+                # Wait for batch to complete
+                batch_results = await asyncio.gather(*tasks, return_exceptions=True)
                 
-                if results:
-                    message = f"🚨 Breakout Alert for {category}:\n\n"
-                    for r in results:
-                        term = r['term']
-                        message += f"📈 Term: {term}\n"
-                        message += f"Value: {r['value']:.1f}\n"
+                # Process results and send notifications
+                for category, results in zip(batch.keys(), batch_results):
+                    if isinstance(results, Exception):
+                        logger.error(f"Error in category {category}: {str(results)}")
+                        continue
                         
-                        # Add stocks with breakout patterns
-                        if r['stocks']:
-                            message += "\n💼 Related Companies with High Interest:\n"
-                            for stock in r['stocks']:
-                                message += f"${stock['symbol']} ({stock['company']})\n"
-                                message += f"Interest: {stock['value']:.1f} (Z-score: {stock['z_score']:.1f})\n"
-                        else:
-                            message += "\n💼 Related Companies (No significant patterns):\n"
-                            term_stocks = data['search_terms'][term]
-                            for symbol, company in term_stocks.items():
-                                company_name = company.split(' - ')[0]
-                                message += f"${symbol} ({company_name})\n"
-                        
-                        message += "\n"  # Add spacing between terms
-                    
-                    logger.info(f"Breakout detected in {category}:")
-                    logger.info(message)
-                    
-                    await self.send_telegram_alert(message)
+                    if results:
+                        message = self.format_alert_message(category, results)
+                        await self.send_telegram_alert(message)
+                
+                # Short delay between batches
+                await asyncio.sleep(10)
             
             logger.info("Scan cycle complete")
             
         except Exception as e:
             logger.error(f"Error in scan cycle: {str(e)}")
             raise
+
+    def format_alert_message(self, category, results):
+        """Format alert message (moved to separate method)"""
+        message = f"🚨 Breakout Alert for {category}:\n\n"
+        for r in results:
+            term = r['term']
+            message += f"📈 Term: {term}\n"
+            message += f"Value: {r['value']:.1f}\n"
+            
+            if r['stocks']:
+                message += "\n💼 Related Companies with High Interest:\n"
+                for stock in r['stocks']:
+                    message += f"${stock['symbol']} ({stock['company']})\n"
+                    message += f"Interest: {stock['value']:.1f} (Z-score: {stock['z_score']:.1f})\n"
+            else:
+                message += "\n💼 Related Companies (No significant patterns):\n"
+                term_stocks = self.categories[category]['search_terms'][term]
+                for symbol, company in term_stocks.items():
+                    company_name = company.split(' - ')[0]
+                    message += f"${symbol} ({company_name})\n"
+            
+            message += "\n"
+        return message
 
     async def start_app(self):
         """Initialize Telegram"""
